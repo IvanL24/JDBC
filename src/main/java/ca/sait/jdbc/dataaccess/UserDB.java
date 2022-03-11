@@ -81,22 +81,30 @@ public class UserDB {
         return user;
     }
 
-    public void insert(Note note) throws Exception {
+    public boolean insert(User user) throws Exception {
         ConnectionPool cp = ConnectionPool.getInstance();
         Connection con = cp.getConnection();
         PreparedStatement ps = null;
-        String sql = "INSERT INTO note (title, contents, owner) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO `userdb`.`user` (`email`, `first_name`, `last_name`, `password`, `role`) VALUES (?, ?, ?, ?, ?)";
+        
+        boolean inserted = false;
         
         try {
             ps = con.prepareStatement(sql);
-            ps.setString(1, note.getTitle());
-            ps.setString(2, note.getContents());
-            ps.setString(3, note.getOwner());
-            ps.executeUpdate();
+            ps.setString(1, user.getEmail());
+            ps.setString(2, user.getFirstName());
+            ps.setString(3, user.getLastName());
+            ps.setString(4, user.getPassword());
+            ps.setInt(5, user.getRole().getRoleId());
+            
+            inserted = ps.executeUpdate() != 0;
+            
         } finally {
             DBUtil.closePreparedStatement(ps);
             cp.freeConnection(con);
         }
+        
+        return inserted;
     }
 
     public void update(Note note) throws Exception {
