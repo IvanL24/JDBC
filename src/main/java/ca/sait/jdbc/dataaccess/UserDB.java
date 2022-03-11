@@ -46,26 +46,31 @@ public class UserDB {
             cp.freeConnection(con);
         }
 
-        return note;
+        return users;
     }
 
-    public Note get(int noteId) throws Exception {
-        Note note = null;
+    public User get(String email) throws Exception {
+        User user = null;
         ConnectionPool cp = ConnectionPool.getInstance();
         Connection con = cp.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String sql = "SELECT * FROM note WHERE note_id=?";
+        String sql = "SELECT * FROM user JOIN role ON role.role_id = user.role WHERE email = ? LIMIT 1";
         
         try {
             ps = con.prepareStatement(sql);
-            ps.setInt(1, noteId);
+            ps.setString(1, email);
             rs = ps.executeQuery();
             if (rs.next()) {
-                String title = rs.getString(2);
-                String contents = rs.getString(3);
-                String owner = rs.getString(4);
-                note = new Note(noteId, title, contents, owner);
+                boolean active = rs.getBoolean(2);
+                String firstName = rs.getString(3);
+                String lastName = rs.getString(4);;
+                String password = rs.getString(5);;
+                int roleId = rs.getInt(6);
+                String roleName = rs.getString(7);
+                
+                Role role  = new Role(roleId, roleName);
+                user = new User(email,active, firstName, lastName, password, role);
             }
         } finally {
             DBUtil.closeResultSet(rs);
@@ -73,7 +78,7 @@ public class UserDB {
             cp.freeConnection(con);
         }
         
-        return note;
+        return user;
     }
 
     public void insert(Note note) throws Exception {
