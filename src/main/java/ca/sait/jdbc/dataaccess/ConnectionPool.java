@@ -1,4 +1,4 @@
-
+package ca.sait.jdbc.dataaccess;
 
 import javax.sql.DataSource;
 import javax.naming.InitialContext;
@@ -12,7 +12,7 @@ public class ConnectionPool {
     private ConnectionPool() {
         try {
             InitialContext ic = new InitialContext();
-            dataSource = (DataSource) ic.lookup("java:/comp/env/jdbc/notesdb");
+            dataSource = (DataSource) ic.lookup("java:/comp/env/jdbc/usersdb");
         } catch (NamingException e) {
             System.out.println(e);
         }
