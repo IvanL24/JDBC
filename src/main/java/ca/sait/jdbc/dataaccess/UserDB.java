@@ -117,11 +117,11 @@ public class UserDB {
         
         try {
             ps = con.prepareStatement(sql);
-            ps.setString(2, user.getFirstName());
-            ps.setString(3, user.getLastName());
-            ps.setString(4, user.getPassword());
-            ps.setInt(5, user.getRole().getRoleId());
-            ps.setString(1, user.getEmail());
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setString(3, user.getPassword());
+            ps.setInt(4, user.getRole().getRoleId());
+            ps.setString(5, user.getEmail());
             
             updated = ps.executeUpdate() != 0;
             
@@ -132,20 +132,23 @@ public class UserDB {
         return updated;
     }
 
-    public void delete(Note note) throws Exception {
+    public boolean delete(User user) throws Exception {
         ConnectionPool cp = ConnectionPool.getInstance();
         Connection con = cp.getConnection();
         PreparedStatement ps = null;
-        String sql = "DELETE FROM note WHERE note_id=?";
+        String sql = "DELETE FROM user WHERE email = ?";
+        
+        boolean deleted;
         
         try {
             ps = con.prepareStatement(sql);
-            ps.setInt(1, note.getNoteId());
-            ps.executeUpdate();
+            ps.setString(1, user.getEmail());
+            deleted = ps.executeUpdate() != 0;
         } finally {
             DBUtil.closePreparedStatement(ps);
             cp.freeConnection(con);
         }
+        return deleted;
     }
 
 }
