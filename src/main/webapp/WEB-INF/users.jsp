@@ -43,8 +43,6 @@
         <div>
             
             <h1>User management system</h1>
-            <form action="user" method="POST">
-                <input type="hidden" name="action" value="delete">
                 <table class="table">
                     <thead>
                         <tr>
@@ -66,12 +64,22 @@
                                 <td><c:out value="${user.role.roleName}" /></td>
                                 <td>${user.active ? "Y": "N"}</td>
                                 <td><a href="#">edit</a></td>
-                                <td><a href="user?action=delete&email=${user.email}">delete</a></td>
+                                
+                        
+                                <td>
+                                    <form method="post">
+                                        <input type="hidden" name="action" value="delete" />
+                                        <input type="hidden" name="email" value="${user.email}"/>
+                                        <input type="submit" value="Delete" class="btn btn-link"/>
+                                        
+                                        
+                                    </form>
+                                    
+                                </td>
                             </tr>    
                         </c:forEach>
                     </tbody>
                 </table>
-            </form>
         </div>
         
         <div >

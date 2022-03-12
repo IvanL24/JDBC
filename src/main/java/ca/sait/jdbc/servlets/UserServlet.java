@@ -54,13 +54,7 @@ public class UserServlet extends HttpServlet {
             Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        if(action != null && action.equals("delete")){
-            try {
-                service.delete(email);
-            } catch (Exception ex) {
-                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        
         this.getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
 
     }
@@ -113,6 +107,15 @@ public class UserServlet extends HttpServlet {
             } catch (Exception ex) {
                 Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
             }     
+        }
+        
+        if(action != null && action.equals("delete")){
+            try {
+                String email = request.getParameter("email");
+                service.delete(email);
+            } catch (Exception ex) {
+                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
     }
