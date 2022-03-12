@@ -27,14 +27,14 @@
                 </div>
                 <div >
                     <select name="newRole" id="newRole" required>
-                        <option selected value="0">Choose your role</option>
-                        <option value="1">System Admin</option>
-                        <option value="2">Regular User</option>
-                        <option value="3">Company Admin</option>
+                        <option selected value="choose your role">Choose your role</option>
+                        <option value="System Admin">System Admin</option>
+                        <option value="Regular User">Regular User</option>
+                        <option value="company Admin">Company Admin</option>
                     </select>
                 </div>
                 <div >
-                    <button type="submit">Add</button>
+                    <button type="submit">Add user</button>
                 </div>
                 
             </form>
@@ -63,14 +63,45 @@
                                 <td>${user.email}</td>
                                 <td>${user.firstName}</td>
                                 <td>${user.lastName}</td>
-                                <td>${user.role.roleName}</td>
+                                <td><c:out value="${user.role.roleName}" /></td>
                                 <td>${user.active ? "Y": "N"}</td>
                                 <td><a href="#">edit</a></td>
-                                <td><a href="#">delete</a></td>
+                                <td><a href="user?action=delete&email=${user.email}">delete</a></td>
                             </tr>    
                         </c:forEach>
                     </tbody>
                 </table>
+            </form>
+        </div>
+        
+        <div >
+            <h1>Edit user</h1>
+            <form action="user" method="POST">
+                <input type="hidden" name="action" value="edit">
+                <div>
+                    <input type="text" name="editUserEmail" id="editUserEmail" placeholder="Email" value="<c:out value="${user.email}" />" required>
+                </div>
+                <div>
+                    <input type="text" name="editUserFirstName" id="editUserFirstName" placeholder="First name" required>
+                </div>
+                <div>
+                    <input type="text" name="editUserLastName" id="editUserLastName" placeholder="Last name" required>
+                </div>
+                <div>
+                    <input type="password" name="editUserPassword" id="editUserPassword" placeholder="Password" required>
+                </div>
+                <div >
+                    <select name="editRole" id="editRole" required>
+                        <option selected value="alfjlakfj">${user.role}</option>
+                        <option value="System Admin">System Admin</option>
+                        <option value="Regular User">Regular User</option>
+                        <option value="company Admin">Company Admin</option>
+                    </select>
+                </div>
+                <div >
+                    <button type="submit">Edit user</button>
+                </div>
+                
             </form>
         </div>
         

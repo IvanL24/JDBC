@@ -12,7 +12,8 @@ public class RoleService {
         return roles;
     }
 
-    public String getRoleName(int roleId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public int getRoleId(String roleName) throws Exception {
+        int id = this.roleDB.lookupRoleId(roleName);
+        return id;
     }
 }

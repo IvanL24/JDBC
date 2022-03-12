@@ -4,6 +4,7 @@ import ca.sait.jdbc.models.Role;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,24 +42,30 @@ public class RoleDB {
 
         return roles;
     }
-    
-    public String getRoleName(int roleId) throws Exception {   
+
+    public int lookupRoleId(String roleName) throws SQLException {
         ConnectionPool cp = ConnectionPool.getInstance();
         Connection con = cp.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String sql = "SELECT role_name FROM role WHERE role_id = ?";
+        int id = -1;
+        String sql = "SELECT role_id FROM role WHERE role_name = ?";
 
-        String roleName;
-        
         try {
             ps = con.prepareStatement(sql);
+            ps.setString(1, roleName);
             rs = ps.executeQuery();                      
-            roleName = rs.getString(2);
+            
+            if(rs.next()){
+             id = rs.getInt(1);
+            }
+            
         } finally {
             DBUtil.closePreparedStatement(ps);
             cp.freeConnection(con);
         }
 
-        return roleName;
+        return id;
+    
+    }
 }
