@@ -17,7 +17,7 @@ public class UserDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
         
-        String sql = "SELECT * FROM user JOIN role ON role.role_id = user.role";
+        String sql = "SELECT * FROM user JOIN role ON role.role_id = user.role WHERE active='1'";
         
         try {
             ps = con.prepareStatement(sql);

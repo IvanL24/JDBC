@@ -6,7 +6,7 @@ import ca.sait.jdbc.models.User;
 import java.util.List;
 
 public class UserService {
-    private UserDB userDB = new UserDB();
+    private final UserDB userDB = new UserDB();
     
     public User get(String email) throws Exception {
         User user = this.userDB.get(email);

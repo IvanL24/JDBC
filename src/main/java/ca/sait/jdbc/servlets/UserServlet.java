@@ -1,8 +1,11 @@
 package ca.sait.jdbc.servlets;
 
+import ca.sait.jdbc.models.Role;
 import ca.sait.jdbc.models.User;
+import ca.sait.jdbc.services.RoleService;
 import ca.sait.jdbc.services.UserService;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -27,7 +31,23 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        this.getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
+        
+        UserService service = new UserService();
+        RoleService roleservice = new RoleService();
+        String email = request.getParameter("email");
+        String action = request.getParameter("action");
+
+        
+        try {
+            List<User> users = service.getAll();
+           
+            request.setAttribute("users", users);
+            this.getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
+
+        
+        } catch (Exception ex) {
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -42,21 +62,23 @@ public class UserServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        HttpSession session = request.getSession();
         UserService service = new UserService();
         
-        try {
-            List<User> users = service.getAll();
-           
-            request.setAttribute("users", users);
+        
+        String action = request.getParameter("action");
+ 
+        if(action != null && action.equals("add")){
+            String email = request.getParameter("newUserEmail");
+            String newFname = request.getParameter("newUserFirstName");
+            String newLname = request.getParameter("newUserLastName");
+            String newpass = request.getParameter("newUserPassword");
+            String role = request.getParameter("newRole");
             
-            this.getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
-        
-        } catch (Exception ex) {
-            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+            service.insert(email, newFname, newLname, newpass, role);
+            
+            session.setAttribute("items", items);
+             
         }
-        
-        this.getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
-        
     }
-
 }
