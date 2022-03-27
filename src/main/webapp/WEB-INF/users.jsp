@@ -9,28 +9,28 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     </head>
     <body class="d-flex justify-content-around">
-        <div >
+        <div>
             <h1>Add user</h1>
-            <form action="user" method="POST">
+            <form action="user" method="POST"  class="d-flex flex-column align-items-center">
                 <input type="hidden" name="action" value="add">
-                <div>
-                    <input type="text" name="newUserEmail" id="newUserEmail" placeholder="Email" required>
+                <div class="m-1">
+                    <input type="email" name="email" id="email" placeholder="Email">
                 </div>
                 <div>
-                    <input type="text" name="newUserFirstName" id="newUserFirstName" placeholder="First name" required>
+                    <input type="text" name="firstName" id="firstName" placeholder="First name">
                 </div>
                 <div>
-                    <input type="text" name="newUserLastName" id="newUserLastName" placeholder="Last name" required>
+                    <input type="text" name="lastName" id="lastName" placeholder="Last name">
                 </div>
                 <div>
-                    <input type="password" name="newUserPassword" id="newUserPassword" placeholder="Password" required>
+                    <input type="password" name="password" id="password" placeholder="Password">
                 </div>
                 <div >
-                    <select name="newRole" id="newRole" required>
-                        <option selected value="choose your role">Choose your role</option>
-                        <option value="System Admin">System Admin</option>
-                        <option value="Regular User">Regular User</option>
-                        <option value="company Admin">Company Admin</option>
+                    <select name="role" id="role">
+                        <option>Choose your role</option>
+                        <c:forEach var="role" items="${roles}">
+                            <option value="${role.roleName}">${role.roleName}</option>
+                        </c:forEach>
                     </select>
                 </div>
                 <div >
@@ -43,6 +43,7 @@
         <div>
             
             <h1>User management system</h1>
+            <form action="user" method="POST">
                 <table class="table">
                     <thead>
                         <tr>
@@ -61,25 +62,19 @@
                                 <td>${user.email}</td>
                                 <td>${user.firstName}</td>
                                 <td>${user.lastName}</td>
-                                <td><c:out value="${user.role.roleName}" /></td>
+                                <td>${user.role.roleName}</td>
                                 <td>${user.active ? "Y": "N"}</td>
-                                <td><a href="#">edit</a></td>
-                                
-                        
                                 <td>
-                                    <form method="post">
-                                        <input type="hidden" name="action" value="delete" />
-                                        <input type="hidden" name="email" value="${user.email}"/>
-                                        <input type="submit" value="Delete" class="btn btn-link"/>
-                                        
-                                        
-                                    </form>
-                                    
+                                    <button type="submit" name="action" value="edit?${user.email}">Edit</button>
+                                </td>
+                                <td>
+                                    <button type="submit" name="action" value="delete?${user.email}">Delete</button>
                                 </td>
                             </tr>    
                         </c:forEach>
                     </tbody>
                 </table>
+            </form>
         </div>
         
         <div >
@@ -87,30 +82,33 @@
             <form action="user" method="POST">
                 <input type="hidden" name="action" value="edit">
                 <div>
-                    <input type="text" name="editUserEmail" id="editUserEmail" placeholder="Email" value="<c:out value="${user.email}" />" required>
+                    <input type="email" name="email" id="email" readonly value="${user.email}">
                 </div>
                 <div>
-                    <input type="text" name="editUserFirstName" id="editUserFirstName" placeholder="First name" required>
+                    <input type="text" name="firstName" id="firstName" value="${user.firstName}">
                 </div>
                 <div>
-                    <input type="text" name="editUserLastName" id="editUserLastName" placeholder="Last name" required>
+                    <input type="text" name="lastName" id="lastName" value="${user.lastName}">
                 </div>
                 <div>
-                    <input type="password" name="editUserPassword" id="editUserPassword" placeholder="Password" required>
+                    <input type="password" name="password" id="password" value="${user.password}">
                 </div>
                 <div >
-                    <select name="editRole" id="editRole" required>
-                        <option selected value="alfjlakfj">${user.role}</option>
-                        <option value="System Admin">System Admin</option>
-                        <option value="Regular User">Regular User</option>
-                        <option value="company Admin">Company Admin</option>
+                    <select name="role" id="role">
+                        <option>Choose your role</option>
+                        <c:forEach var="role" items="${roles}">
+                            <option value="${role.roleName}">${role.roleName}</option>
+                        </c:forEach>
                     </select>
                 </div>
                 <div >
-                    <button type="submit">Edit user</button>
+                    <button type="submit">Save</button>
                 </div>
-                
+                <div >
+                    <button type="submit">Cancel</button>
+                </div>
             </form>
+                <p>${message}</p>
         </div>
         
     </body>

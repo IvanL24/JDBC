@@ -22,4 +22,8 @@ public class DBUtil {
             System.out.println(e);
         }
     }
+
+    static Object getEmFactory() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

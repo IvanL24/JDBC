@@ -31,32 +31,26 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        UserService service = new UserService();
-        RoleService roleservice = new RoleService();
-        String email = request.getParameter("email");
         String action = request.getParameter("action");
+        String query = request.getQueryString();
 
         
         try {
-            List<User> users = service.getAll();
+        
+            UserService userservice = new UserService();
+            RoleService roleservice = new RoleService(); 
+
+            List<User> users = userservice.getAll();
             request.setAttribute("users", users);
-        
-        } catch (Exception ex) {
-            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        try {
+            
             List<Role> roles = roleservice.getAll();
-           
             request.setAttribute("roles", roles);
+            
+            this.getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
+        
         } catch (Exception ex) {
             Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
-        this.getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
-
     }
 
     /**
@@ -71,52 +65,108 @@ public class UserServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        HttpSession session = request.getSession();
-        UserService service = new UserService();
-        RoleService roleService = new RoleService();
-        
         String action = request.getParameter("action");
- 
+        
         if(action != null && action.equals("add")){
             try {
-                String email = request.getParameter("newUserEmail");
-                String newFname = request.getParameter("newUserFirstName");
-                String newLname = request.getParameter("newUserLastName");
-                String newpass = request.getParameter("newUserPassword");
-                String roleName = request.getParameter("newRole");
-            
-                int roleId = roleService.getRoleId(roleName);
-            
-                service.insert(email, true, newFname, newLname, newpass, new Role(roleId, roleName));
-            } catch (Exception ex) {
-                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }     
-        }
-        
-        if(action != null && action.equals("edit")){
-            try {
-                String email = request.getParameter("editUserEmail");
-                String newFname = request.getParameter("editUserFirstName");
-                String newLname = request.getParameter("editUserLastName");
-                String newpass = request.getParameter("editUserPassword");
-                String roleName = request.getParameter("editRole");
-            
-                int roleId = roleService.getRoleId(roleName);
-            
-                service.update(email, true, newFname, newLname, newpass, new Role(roleId, roleName));
-            } catch (Exception ex) {
-                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }     
-        }
-        
-        if(action != null && action.equals("delete")){
-            try {
+                
                 String email = request.getParameter("email");
-                service.delete(email);
-            } catch (Exception ex) {
+                boolean active = request.getParameter("active") != null;
+                String firstName = request.getParameter("firstName");
+                String lastName = request.getParameter("lastName");
+                String password = request.getParameter("password");
+                String roleName = request.getParameter("role");
+                int roleId = 0;
+                
+                RoleService rs = new RoleService();
+                List<Role> rolelist;
+                rolelist = rs.getAll();
+                
+                for(Role role : rolelist){
+                    if(role.getRoleName().equals(roleName)){
+                        roleId = role.getRoleId();
+                    }
+                }
+                
+                if(roleId == 0){
+                    throw new Exception("Invalid role");
+                }
+                
+                Role role = new Role(roleId, roleName);
+                UserService us = new UserService();
+                us.insert(email, active, firstName, lastName, password, role);
+                request.setAttribute("message", "user has been updated");
+                
+            }catch (Exception ex) {
+                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+                request.setAttribute("message", "user was not updated");
+            }
+        } else if(action != null && action.contains("edit?")){
+            try{
+                String email = action.split("\\?", 2)[1];
+                UserService us = new UserService();
+                User user = us.get(email);
+                request.setAttribute("user", user);
+                
+            }catch(Exception ex){
+                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if(action != null && action.equals("edit")){
+            try {
+                
+                String email = request.getParameter("email");
+                boolean active = request.getParameter("active") != null;
+                String firstName = request.getParameter("firstName");
+                String lastName = request.getParameter("lastName");
+                String password = request.getParameter("password");
+                String roleName = request.getParameter("role");
+                int roleId = 0;
+                
+                RoleService rs = new RoleService();
+                List<Role> rolelist;
+                rolelist = rs.getAll();
+                
+                for(Role role : rolelist){
+                    if(role.getRoleName().equals(roleName)){
+                        roleId = role.getRoleId();
+                    }
+                }
+                
+                if(roleId == 0){
+                    throw new Exception("Invalid role");
+                }
+                
+                Role role = new Role(roleId, roleName);
+                UserService us = new UserService();
+                us.update(email, active, firstName, lastName, password, role);
+                request.setAttribute("message", "user has been updated");
+                
+            }catch (Exception ex) {
+                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+                request.setAttribute("message", "user was not updated");
+            }
+        }  else if(action != null && action.contains("delete?")){
+            try{
+                String email = action.split("\\?", 2)[1];
+                UserService us = new UserService();
+                us.delete(email);
+                request.setAttribute("message", "user has been deleted");
+                
+            }catch(Exception ex){
                 Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+        try{
+            UserService us = new UserService();
+            List<User> users = us.getAll();
+            RoleService rs = new RoleService();
+            List<Role> roles = rs.getAll();
+            
+            request.setAttribute("users", users);
+            request.setAttribute("roles", roles);
+        } catch (Exception ex){
+            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);       
     }
 }
